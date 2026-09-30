@@ -2,9 +2,9 @@
 
 ## RTL Design and VLSI Analysis of an AES-128 Hardware Cryptographic Engine
 
-This project presents a hardware implementation of the **Advanced Encryption Standard (AES-128)** using Verilog RTL. The design supports both **128-bit encryption and decryption** and was developed and analyzed using **AMD/Xilinx Vivado**.
+This project presents a hardware implementation of the Advanced Encryption Standard (AES-128) using Verilog RTL. The design supports both 128-bit encryption and decryption and was developed and analyzed using AMD/Xilinx Vivado.
 
-The project covers RTL design, functional verification, FPGA synthesis, implementation, static timing analysis, resource utilization, and power estimation.
+The project covers RTL design, functional verification, FPGA synthesis, FPGA implementation, static timing analysis, resource utilization, and power estimation.
 
 ---
 
@@ -32,9 +32,27 @@ The processor implements the major AES transformations required for encryption a
 
 ---
 
-## Architecture
-
-The top-level FPGA wrapper is:
+## High-Level Architecture
 
 ```text
-aes128_fpga_top.v
+                   +----------------------+
+                   |   aes128_fpga_top    |
+                   +----------+-----------+
+                              |
+                              v
+                   +----------------------+
+                   |     aes128_top       |
+                   +----------+-----------+
+                              |
+                    +---------+---------+
+                    |                   |
+                    v                   v
+           +----------------+  +----------------+
+           | AES Encryption |  | AES Decryption |
+           |    Engine      |  |     Engine     |
+           +-------+--------+  +--------+-------+
+                   |                   |
+                   +---------+---------+
+                             |
+                             v
+                    128-bit Data Output
