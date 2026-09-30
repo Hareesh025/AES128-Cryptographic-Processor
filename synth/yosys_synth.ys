@@ -1,0 +1,46 @@
+# Yosys Synthesis Script for AES-128
+# Run: yosys -s yosys_synth.ys
+
+# Read RTL files
+read_verilog ../../rtl/aes_sbox.v
+read_verilog ../../rtl/aes_inv_sbox.v
+read_verilog ../../rtl/sub_bytes.v
+read_verilog ../../rtl/inv_sub_bytes.v
+read_verilog ../../rtl/shift_rows.v
+read_verilog ../../rtl/inv_shift_rows.v
+read_verilog ../../rtl/mix_columns.v
+read_verilog ../../rtl/inv_mix_columns.v
+read_verilog ../../rtl/key_expand.v
+read_verilog ../../rtl/aes128_encrypt.v
+read_verilog ../../rtl/aes128_decrypt.v
+read_verilog ../../rtl/aes128_top.v
+
+# Set top module
+hierarchy -check -top aes128_top
+
+# Synthesis
+proc; opt; fsm; opt; memory; opt
+techmap; opt
+
+# ABC synthesis (for ASIC flow with liberty file)
+# abc -liberty ../../synth/constraints/cells.lib
+
+# Generic techmap for FPGA
+techmap -map +/cmos/cmos_map.v
+
+# Statistics
+stat -top aes128_top
+stat -width -top aes128_top
+
+# Write synthesized netlist
+write_verilog ../../results/aes128_yosys_netlist.v
+
+# Generate reports
+tee -o ../../results/area/yosys_area.rpt stat -top aes128_top
+tee -o ../../results/timing/yosys_timing.rpt stat -width -top aes128_top
+
+# Show schematic (requires graphviz)
+# show -format pdf -prefix ../../results/screenshots/yosys_schematic
+
+puts "Yosys synthesis completed!"
+puts "Reports in ../../results/"
